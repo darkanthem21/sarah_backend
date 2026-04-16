@@ -116,9 +116,7 @@ uv run alembic downgrade -1
 
 ### Diagrama ER
 
-> **Pendiente** — se actualizará con el diagrama una vez recibido.
->
-> _Reemplazar con:_ `![Diagrama ER](docs/er_diagram.png)`
+![Diagrama ER](docs/er_diagram.png)
 
 ### Entidades
 
