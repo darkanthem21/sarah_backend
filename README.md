@@ -1,4 +1,4 @@
-# Sarah — Backend 
+# Sarah — Backend
 
 Backend para almacenamiento de datos del asistente clínico conversacional **Sarah**, diseñado para mejorar la adherencia a tratamientos farmacológicos para la obesidad.
 
@@ -24,15 +24,16 @@ La baja adherencia a tratamientos es un problema crítico entre consultas médic
 
 ```
 app/
-├── main.py          # Instancia FastAPI y registro de routers
+├── main.py            # Instancia FastAPI y registro de routers
 ├── core/
-│   ├── config.py    # Settings cargados desde .env via pydantic-settings
-│   └── database.py  # Engine, SessionLocal, Base y dependencia get_db
-├── models/          # Modelos ORM de SQLAlchemy (un archivo por dominio)
-├── schemas/         # Schemas Pydantic para request/response
-├── routers/         # Handlers agrupados por dominio
-└── services/        # Lógica de negocio, llamada desde los routers
-tests/               # Tests con pytest
+│   ├── config.py      # Settings cargados desde .env via pydantic-settings
+│   └── database.py    # Engine, SessionLocal, Base y dependencia get_db
+├── models/            # Modelos ORM SQLAlchemy (un archivo por dominio)
+├── schemas/           # Schemas Pydantic para request/response
+├── routers/           # Handlers HTTP agrupados por dominio
+└── services/          # Lógica de negocio, llamada desde los routers
+alembic/               # Migraciones de base de datos
+tests/                 # Tests con pytest
 ```
 
 ## Inicio rápido
@@ -58,11 +59,14 @@ uv sync
 # Levantar la base de datos
 docker compose up db -d
 
+# Aplicar migraciones
+uv run alembic upgrade head
+
 # Correr el servidor en modo desarrollo (hot-reload)
 uv run fastapi dev app/main.py
 ```
 
-La API queda disponible en `http://localhost:8000`.  
+La API queda disponible en `http://localhost:8000`.
 Documentación interactiva: `http://localhost:8000/docs`.
 
 ### Stack completo con Docker
@@ -98,18 +102,23 @@ uv run pytest tests/path/test_file.py::test_name
 Las migraciones se gestionan con Alembic. Los modelos heredan de `Base` definida en `app/core/database.py`.
 
 ```bash
-# Crear una nueva migración
+# Crear una nueva migración (después de modificar un modelo)
 uv run alembic revision --autogenerate -m "descripción"
 
-# Aplicar migraciones
+# Aplicar migraciones pendientes
 uv run alembic upgrade head
+
+# Revertir la última migración
+uv run alembic downgrade -1
 ```
 
 ## Esquema de base de datos
 
 ### Diagrama ER
 
-![Diagrama ER](docs/er_diagram.png)`
+> **Pendiente** — se actualizará con el diagrama una vez recibido.
+>
+> _Reemplazar con:_ `![Diagrama ER](docs/er_diagram.png)`
 
 ### Entidades
 
@@ -141,4 +150,25 @@ uv run alembic upgrade head
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| GET | `/health` | Health check de la API |
+| GET | `/health` | Health check |
+| GET/POST | `/pacientes/` | Listar / crear pacientes |
+| GET/PUT/DELETE | `/pacientes/{id}` | Obtener / actualizar / eliminar paciente |
+| GET/POST | `/medicos/` | Listar / crear médicos |
+| GET/PUT/DELETE | `/medicos/{id}` | Obtener / actualizar / eliminar médico |
+| GET/POST | `/red-apoyo/` | Listar / crear red de apoyo |
+| GET/PUT/DELETE | `/red-apoyo/{id}` | Obtener / actualizar / eliminar |
+| GET/POST | `/eventos/` | Listar / crear eventos médicos |
+| GET/PUT/DELETE | `/eventos/{id}` | Obtener / actualizar / eliminar evento |
+| GET/POST | `/estados-diarios/` | Listar / crear estados diarios |
+| GET | `/estados-diarios/paciente/{id}` | Estados diarios de un paciente |
+| GET/PUT/DELETE | `/estados-diarios/{id}` | Obtener / actualizar / eliminar |
+| GET/POST | `/sintomas/` | Listar / crear síntomas |
+| GET/PUT/DELETE | `/sintomas/{id}` | Obtener / actualizar / eliminar síntoma |
+| GET/POST | `/interacciones/` | Crear interacción |
+| GET | `/interacciones/paciente/{id}` | Interacciones de un paciente |
+| DELETE | `/interacciones/{id}` | Eliminar interacción |
+| GET/POST | `/preferencias/` | Crear preferencia |
+| GET | `/preferencias/paciente/{id}` | Preferencias de un paciente |
+| GET/PUT/DELETE | `/preferencias/{id}` | Obtener / actualizar / eliminar |
+
+> Documentación interactiva completa en `/docs` (Swagger UI) y `/redoc`.
