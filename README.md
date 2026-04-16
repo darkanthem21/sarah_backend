@@ -35,6 +35,8 @@ app/
 tests/               # Tests con pytest
 ```
 
+## Inicio rápido
+
 ### Requisitos previos
 
 - [UV](https://docs.astral.sh/uv/)
@@ -103,10 +105,40 @@ uv run alembic revision --autogenerate -m "descripción"
 uv run alembic upgrade head
 ```
 
+## Esquema de base de datos
+
+### Diagrama ER
+
+![Diagrama ER](docs/er_diagram.png)`
+
+### Entidades
+
+| Entidad | Descripción |
+|---|---|
+| `Paciente` | Datos personales, clínicos y métricas actuales del paciente |
+| `Medico` | Profesional de salud que trata al paciente |
+| `RedApoyo` | Persona de apoyo asociada al paciente (familiar, cuidador) |
+| `EventoMedical` | Citas, controles u otros eventos con referente médico |
+| `EstadoDiario` | Registro diario de adherencia, peso, ánimo y alertas de riesgo |
+| `Sintoma` | Catálogo de síntomas reportables |
+| `Interaccion` | Mensajes del chat entre paciente y el asistente Sarah |
+| `Preferencias` | Preferencias declaradas por el paciente |
+
+### Relaciones
+
+| Relación | Cardinalidad | Implementación |
+|---|---|---|
+| Paciente ↔ Medico | N:N | Tabla intermedia `paciente_medico` |
+| Paciente → RedApoyo | N:1 | FK `id_apoyo` en `Paciente` |
+| Medico → EventoMedical | 1:N | FK `id_medico` en `EventoMedical` |
+| Paciente ↔ EventoMedical | N:N | Tabla intermedia `paciente_evento` |
+| Paciente → EstadoDiario | 1:N | FK `id_paciente` en `EstadoDiario` |
+| EstadoDiario ↔ Sintoma | N:N | Tabla intermedia `estado_sintoma` |
+| Paciente → Interaccion | 1:N | FK `id_paciente` en `Interaccion` |
+| Paciente → Preferencias | 1:N | FK `id_paciente` en `Preferencias` |
+
 ## Endpoints
 
 | Método | Ruta | Descripción |
 |---|---|---|
 | GET | `/health` | Health check de la API |
-
-> La documentación completa de la API está disponible en `/docs` (Swagger UI) y `/redoc`.
