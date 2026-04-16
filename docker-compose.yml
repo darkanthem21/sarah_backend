@@ -13,13 +13,13 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: karen_db
+      POSTGRES_DB: sarah_db
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d karen_db"]
+      test: ["CMD-SHELL", "pg_isready -U user -d sarah_db"]
       interval: 5s
       timeout: 5s
       retries: 5
